@@ -5,5 +5,10 @@ WriteMakefile(
     NAME         => 'DateTime::Event::Easter',
     VERSION_FROM => 'lib/DateTime/Event/Easter.pm', # finds $VERSION
     AUTHOR       => 'Rick Measham (rickm@cpan.org)',
-    ABSTRACT     => '',
+    ABSTRACT     => 'Returns Easter events for DateTime objects',
+    PREREQ_PM => {
+                    'DateTime'         => 0.06,
+                    'Carp'             => 0,
+                    'Params::Validate' => 0,
+    }
 );

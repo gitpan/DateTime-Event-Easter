@@ -6,7 +6,6 @@ use Params::Validate qw( validate SCALAR BOOLEAN OBJECT );
 use strict;
 use vars qw(
     $VERSION @ISA @EXPORT @EXPORT_OK 
-    $EARLIEST $LATEST $ZONESTART $ZONEEND
 );
 
 require Exporter;
@@ -14,15 +13,7 @@ require Exporter;
 @ISA = qw(Exporter);
 
 @EXPORT_OK = qw(easter);
-$VERSION = '0.2';
-
-
-$EARLIEST = '0321';     # Earliest Easter is March 21st
-$LATEST = '0425';       # Latest Full Moon is April 18, so the latest Easter is April 25
-
-$ZONESTART = '0920';    # In the 'zone' we need to check both the
-$ZONEEND = '1025';      #   previous and next to find the closest
-
+$VERSION = '1.00.1';
 
 sub new {
     my $class = shift;
@@ -275,46 +266,41 @@ DateTime::Event::Easter - Returns Easter events for DateTime objects
 =head1 SYNOPSIS
 
   use DateTime::Event::Easter;
-
+  
   $dt = DateTime->new( year   => 2002,
                        month  => 3,
                        day    => 31,
                      );
-
-
+  
+  
   $easter_sunday = DateTime::Event::Easter->new();
 
   $previous_easter_sunday = $easter_sunday->previous($dt);
   # Sun, 15 Apr 2001 00:00:00 UTC
-
+  
   $following_easter_sunday = $easter_sunday->following($dt);
   # Sun, 20 Apr 2003 00:00:00 UTC
-
+  
   $closest_easter_sunday = $easter_sunday->closest($dt);
   # Sun, 31 Mar 2002 00:00:00 UTC
-
+  
   $is_easter_sunday = $easter_sunday->is($dt);
   # 1
-
+  
   $palm_sunday = DateTime::Event::Easter->new(day=>'Palm Sunday');
 
 
-  $dt2 = DateTime->new( year   => 2012,
-                        month  => 3,
-                        day    => 31,
+  $dt2 = DateTime->new( year   => 2060,
+                        month  => 4,
+                        day    => 30,
                       );
-
+  
   @set = $palm_sunday->set(from=>$dt, to=>$dt2, inclusive=>1);
   # Sun, 13 Apr 2003 00:00:00 UTC
   # Sun, 04 Apr 2004 00:00:00 UTC
   # Sun, 20 Mar 2005 00:00:00 UTC
   # Sun, 09 Apr 2006 00:00:00 UTC
-  # Sun, 01 Apr 2007 00:00:00 UTC
-  # Sun, 16 Mar 2008 00:00:00 UTC
-  # Sun, 05 Apr 2009 00:00:00 UTC
-  # Sun, 28 Mar 2010 00:00:00 UTC
-  # Sun, 17 Apr 2011 00:00:00 UTC
-
+  
 =head1 DESCRIPTION
 
 The DateTime::Event::Easter module returns Easter events for DateTime
@@ -351,22 +337,21 @@ This class accepts the following options to its 'new' constructor:
 
 =item * easter => ([western]|eastern)
 
-The Catholic and Protestant churches use the 'official' date for the
-Paschal Full Moon which is the first Full Moon on or after the
-'official' vernal Equinox (March 21). Not wanting to be outdone the
-Orthodox churches decided to use the same date .. only they use it in
-the Julian Calendar (which is increasingly moving away from the
-Georgian) This means Paschal Full Moon for Easter calculations can be
-the Full Moon after the moon used in the western world.
+DateTime::Event::Easter understands two calculations for Easter. For
+simplicity we've called them 'western' and 'eastern'.
 
-By default this module uses the Gregorian Easter, however even if you
-ask for 'eastern' Easter you will get a Gregorian DateTime back. See
-DateTime::Calendar::Julian if you would like to convert this into a
-Julian date.
+Western Easter is the day celebrated by the Catholic and Protestant
+churches. It falls on the first Sunday on or after the the first Full
+Moon after March 21st.
 
-In the future it is thought to allow an option of 'auto' here. This will
-take a look at the DateTime object's timezone to determine if a country
-follows the Official or the Astronomical method.
+Eastern Easter, as celebrated by the Eastern Orthodox Churches similarly
+falls on the first Sunday on or after the the first Full Moon after
+March 21st. However Eastern Easter uses March 21st in the Julian
+Calendar.
+
+By default this module uses the Western Easter. Even if you pass a
+Julian DateTime to the module, you'll get back Western Easter unless you
+specifically ask for Eastern.
 
 If this parameter is not supplied, the western Easter will be used.
 
@@ -385,14 +370,14 @@ of it a 'Easter Day' if you want)
 This parameter also allows the following abreviations: day =>
 ([Sunday]|Palm|Thursday|Friday|Saturday)
 
-Other days which rely on Easter are in another module
-DateTime::Event::ChurchYear which (at this time) still needs to be
-written. The days that are included are the main days that are
-celebrated as 'Easter'
-
 =back
 
 =head1 METHODS
+
+For all these methods, unless otherwise noted, $dt is a plain vanila
+DateTime object or a DateTime object from any DateTime::Calendar module
+that can handle calls to from_object and utc_rd_values (which should be
+all of them, but there's nothing stopping someone making a bad egg).
 
 This class offers the following methods.
 
@@ -420,20 +405,26 @@ Return positive (1) if $dt is the Easter Event, otherwise returns false
 
 =item * as_list(from => $dt, to => $dt2, inclusive=>I<([0]|1)>)
 
-Returns a list of Easter Events between I<to> and I<from>. If the
-optional I<inclusive> parameter is true (non-zero), the to and from
-dates will be included if they are the Easter Event. If you do not
-include an I<inclusive> parameter, we assume you do not want to include
-these dates (the same behaviour as supplying a false value)
+Returns a list of Easter Events between I<to> and I<from>.
+
+If the optional I<inclusive> parameter is true (non-zero), the to and
+from dates will be included if they are the Easter Event.
+
+If you do not include an I<inclusive> parameter, we assume you do not
+want to include these dates (the same behaviour as supplying a false
+value)
 
 
 =item * as_set(from => $dt, to => $dt2, inclusive=>I<([0]|1)>)
 
-Returns a DateTime::Set of Easter Events between I<to> and I<from>. If
-the optional I<inclusive> parameter is true (non-zero), the to and from
-dates will be included if they are the Easter Event. If you do not
-include an I<inclusive> parameter, we assume you do not want to include
-these dates (the same behaviour as supplying a false value)
+Returns a DateTime::Set of Easter Events between I<to> and I<from>.
+
+If the optional I<inclusive> parameter is true (non-zero), the to and
+from dates will be included if they are the Easter Event.
+
+If you do not include an I<inclusive> parameter, we assume you do not
+want to include these dates (the same behaviour as supplying a false
+value)
 
 =back
 
@@ -446,17 +437,58 @@ exports are supported.
 
 =item * easter($year)
 
-Given a year, this method will return a DateTime object for Easter
-Sunday in that year.
-
-This method uses the Official Paschal Moon.
+Given a Gregorian year, this method will return a DateTime object for
+Western Easter Sunday in that year.
 
 =back
 
-=head1 AUTHOR
+=head1 THE SMALL PRINT
+
+=head2 REFERENCES
+
+=over 4
+
+=item * http://datetime.perl.org - The official home of the DateTime
+project
+
+=item * http://www.tondering.dk/claus/calendar.html - Claus Tøndering's
+calendar FAQ
+
+=back
+
+=head2 SUPPORT
+
+Support for this module, and for all DateTime modules will be given
+through the DateTime mailing list - datetime@perl.org.
+
+Bugs should be reported through rt.cpan.org.
+
+=head2 AUTHOR
 
 Rick Measham <rickm@cpan.org>
 
-=head1 SEE ALSO
+=head2 CREDITS
 
-L<DateTime>, perl(1).
+Much help from the DateTime mailing list, especially from:
+
+B<Eugene van der Pijll> - who pointed out flaws causing errors on
+gregorian years with no eastern easter (like 35000) and who came up with
+a patch to make the module accept any calendar's DateTime object
+
+B<Dave Rolsky> - who picked nits, designed DateTime itself and leads the project
+
+B<Martin Hasch> - who pointed out the posibility of memory leak with an early beta
+
+=head2 COPYRIGHT
+
+(c) Copyright  2003 Rick Measham. All rights reserved. This program is
+free software; you can redistribute it and/or modify it under the same
+terms as Perl itself.
+
+The full text of the license can be found in the LICENSE file included
+with this module.
+
+=head2 SEE ALSO
+
+L<DateTime>, L<DateTime::Calendar::Easter>, perl(1),
+http://datetime.perl.org.

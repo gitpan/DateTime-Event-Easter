@@ -19,7 +19,7 @@ Note on version conventions:
   this release.
 
 0.01 Mon Mar 24 2003
-	- original version - posted to DateTime mailing list
+        - original version - posted to DateTime mailing list
 
 0.02 Wed Mar 26 2003
         - posted to DateTime mailing list with this message
@@ -46,7 +46,7 @@ Note on version conventions:
         isn't there.
 
 0.03 Sun Mar 30 2003
-	- posted to DateTime mailing list with this message:
+        - posted to DateTime mailing list with this message:
 
         I've poked it with sticks like years with no Orthodox Easter
         (35000).
@@ -66,4 +66,8 @@ Note on version conventions:
         - Added placeholder methods as_span and _tospan. Currently these
           do nothing. Once DateTime::Span exists, we'll get them going.
 
-
+1.00.01 Mon Mar 31 2003
+        - Documentation and Version Number patch
+        - Hadn't updated the documentation for the release version. Done now.
+        - Hadn't updated $VERSION to match the version number on the release
+        * No functionality changed. See note 'Minor decimal number releases'
