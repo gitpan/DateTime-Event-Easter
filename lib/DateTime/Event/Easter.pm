@@ -14,13 +14,14 @@ require Exporter;
 @ISA = qw(Exporter);
 
 @EXPORT_OK = qw(easter);
-$VERSION = '1.02';
+$VERSION = '1.03';
 
 sub new {
     my $class = shift;
     my %args  = validate( @_,
-                    {   easter  => { type => SCALAR, default=>'western', optional=>1, regex => qr/^(western|eastern)$/ },
+                    {   easter  => { type => SCALAR, default=>'western', optional=>1, regex => qr/^(western|eastern)$/i },
                         day     => { type => SCALAR, default=>'sunday', optional=>1 },
+						as		=> { type => SCALAR, default=>'point', optional=>1 },
                     }
                 );
     
@@ -40,11 +41,16 @@ sub new {
         $offset = 0;
     }
     $self{offset} = DateTime::Duration->new(days=>$offset);
-    $self{easter} = $args{easter};
+    $self{easter} = lc $args{easter};
    
     if ($self{easter} eq 'eastern') {
         require DateTime::Calendar::Julian;
     }
+	
+	# Set to return points or spans
+	die("Argument 'as' must be 'point' or 'span'.") unless $args{as}=~/^(point|span)s?$/i;
+	$self{as} = lc $1;
+	
     return bless \%self, $class;
     
 }
@@ -112,14 +118,17 @@ sub closest {
     }
 
     if ($self->is($dt)) {
-	return $dt->truncate(to=>'day')
+		my $easter = $dt->clone->truncate(to=>'day');
+	    $easter = $class->from_object(object=>$easter) if (ref($easter) ne $class);
+		return ($self->{as} eq 'span') 
+			? _tospan($easter)
+			: $easter;
     }
     my $following_easter = $self->following($dt);
     my $following_delta  = $following_easter - $dt;
     my $previous_easter  = $self->previous($dt);
-    my $previous_delta   = $dt - $previous_easter;
         
-    my $easter = ($following_delta->delta_days < $previous_delta->delta_days) 
+    my $easter = ($previous_easter + $following_delta < $dt) 
         ? $following_easter 
         : $previous_easter;
     $easter = $class->from_object(object=>$easter) if (ref($easter) ne $class);
@@ -180,9 +189,37 @@ sub as_list {
     return sort @set;
 }
 
-sub as_set {
+sub as_old_set {
     my $self = shift;
     return DateTime::Set->from_datetimes( dates => [ $self->as_list(@_) ] );
+}
+sub as_set {
+	my $self = shift;
+	my %args = @_;
+	if (exists $args{inclusive}) {
+		croak("You must specify both a 'from' and a 'to' datetime") unless 
+			ref($args{to})=~/DateTime/ and
+			ref($args{from})=~/DateTime/;
+		if ($args{inclusive}) {
+			$args{start} = delete $args{from};
+			$args{end} = delete $args{to};
+		} else {
+			$args{after} = delete $args{from};
+			$args{before} = delete $args{to};
+		}
+		delete $args{inclusive};
+	} elsif (exists $args{from} or exists $args{to}) {
+		croak("You must specify both a 'from' and a 'to' datetime") unless 
+			ref($args{to})=~/DateTime/ and
+			ref($args{from})=~/DateTime/;
+			$args{after} = delete $args{from};
+			$args{before} = delete $args{to};
+	}
+	return DateTime::Set->from_recurrence( 
+		next		=> sub { $self->following( $_[0] ) },
+		previous	=> sub { $self->previous(  $_[0] ) },
+		%args
+	);
 }
 
 sub as_span {
@@ -198,10 +235,10 @@ sub as_point {
 }
 
 sub _tospan {
-   # This is a placeholder. I've not documented any of the span stuff until we
-   # get an API for DateTime::Span. Basically this method will take a DateTime
-   # object and return it as a whole day (currently we only get midnight)
-   return @_;
+   return DateTime::Span->from_datetime_and_duration(
+		start => $_[0],
+		hours => 24,
+   );
 }
 
 sub _easter {
@@ -298,11 +335,14 @@ DateTime::Event::Easter - Returns Easter events for DateTime objects
                         day    => 30,
                       );
   
-  @set = $palm_sunday->set(from=>$dt, to=>$dt2, inclusive=>1);
+  @set = $palm_sunday->as_list(from=>$dt, to=>$dt2, inclusive=>1);
   # Sun, 13 Apr 2003 00:00:00 UTC
   # Sun, 04 Apr 2004 00:00:00 UTC
   # Sun, 20 Mar 2005 00:00:00 UTC
   # Sun, 09 Apr 2006 00:00:00 UTC
+  
+  $datetime_set = $palm_sunday->as_set;
+  # A set of every Palm Sunday ever. See C<DateTime::Set> for more information.
   
 =head1 DESCRIPTION
 
@@ -373,6 +413,15 @@ of it a 'Easter Day' if you want)
 This parameter also allows the following abreviations: day =>
 ([Sunday]|Palm|Thursday|Friday|Saturday)
 
+=item * as => ([point]|span)
+
+By default, all returns are single points in time. Namely they are the
+moment of midnight for the day in question. If you want Easter 2003 then
+you actually get back midnight of April 20th 2003. If you specify 
+C<as => 'span'> in your constructor, you'll now receive 24 hour spans
+rather than moments (or 'points'). I<See also the C<as_span> and C<as_point>
+methods below>
+
 =back
 
 =head1 METHODS
@@ -418,16 +467,29 @@ want to include these dates (the same behaviour as supplying a false
 value)
 
 
-=item * as_set(from => $dt, to => $dt2, inclusive=>I<([0]|1)>)
+=item * as_set()
 
-Returns a DateTime::Set of Easter Events between I<to> and I<from>.
+Returns a DateTime::Set of Easter Events.
 
-If the optional I<inclusive> parameter is true (non-zero), the to and
-from dates will be included if they are the Easter Event.
+In the past this method used the same syntax as 'as_list' above. However
+we now allow both the above syntax as well as the full options allowable
+when creating sets with C<DateTime::Set>. This means you can call
+C<$datetime_set = $palm_sunday->as_set;> and it will return a 
+C<DateTime::Set> of all Palm Sundays. See C<DateTime::Set> for more information.
 
-If you do not include an I<inclusive> parameter, we assume you do not
-want to include these dates (the same behaviour as supplying a false
-value)
+
+=item * as_span()
+
+This method switches output to spans rather than points. See the 'as' attribute
+of the constructor for more information. The method returns the object for easy
+chaining.
+
+=item * as_point()
+
+This method switches output to points rather than spans. See the 'as' attribute
+of the constructor for more information. The method returns the object for easy
+chaining.
+
 
 =back
 

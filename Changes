@@ -93,3 +93,19 @@ Note on version conventions:
 	  test was actually an exact duplicate of 04lists.t! This issue was
 	  discovered by Ron Hill.
 	  
+1.03 Sat Sep 20, 2003 +1000
+	- as_set() now works like a call to DateTime::Set and can accept all
+	  arguments that a DateTime::Set->from_recurrence can take.
+	  Based on idea and patch from Flavio S. Glock
+	- as_span and as_point now work to return spans rather than the old
+	  points. This means you can get a 24 hour span for a day rather than
+	  just midnight on that day.
+	- Similarly, the constructor has an 'as' attribute to set the preference
+	  at construction.
+	- Fixed (again) comparison of durations for determining 'closest'. We now
+	  get one duration and add it to the other datetime, comparing it to now:
+	 	 Duration = NextEaster - Now;
+	 	 Return NextEaster if PreviousEaster+Duration < Now
+	 	 otherwise Return PreviousEaster
+	  Error first noticed by automated CPAN tester.
+		 

@@ -1,4 +1,4 @@
-DateTime::Event::Easter 1.00
+DateTime::Event::Easter
 
 The DateTime::Event::Easter module returns Easter events for DateTime
 objects. From a given datetime, it can tell you the previous, the

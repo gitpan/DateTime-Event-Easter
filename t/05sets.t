@@ -1,6 +1,6 @@
 use strict;
 
-use Test::More tests => 33;
+use Test::More tests => 34;
 
 use DateTime::Event::Easter qw/easter/;
 
@@ -36,6 +36,14 @@ my $event_easter_sunday = DateTime::Event::Easter->new();
 my $non_inclusive_set = $event_easter_sunday->as_set(from => $easter_1901, to => $easter_1917);
 my $inclusive_set = $event_easter_sunday->as_set(from => $easter_1917, to => $easter_1932, inclusive=>1);
 
+# Check new set integration functionality:
+
+my $non_inclusive_new_set = $event_easter_sunday->as_set(after => $easter_1901, before => $easter_1917);
+my @empty_set = $non_inclusive_set->complement($non_inclusive_new_set)->as_list();
+is (scalar(@empty_set), 0, "Full DateTime::Set integration: Matching Sets");
+
+
+# Check the number of elements in the set
 my @ni_set = $non_inclusive_set->as_list();
 is ($#ni_set, $#non_inclusive_expect, "Non-inclusive: Correct number of results");
 

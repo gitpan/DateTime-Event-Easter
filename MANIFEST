@@ -13,4 +13,4 @@ t/04lists.t
 t/05sets.t
 t/06known.t
 t/07eastknown.t
-
+t/08as_span.t
