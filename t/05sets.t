@@ -33,24 +33,34 @@ my $easter_1932 = DateTime->new(
 
 my $event_easter_sunday = DateTime::Event::Easter->new();
 
-my @non_inclusive_set = $event_easter_sunday->as_list(from => $easter_1901, to => $easter_1917);
-my @inclusive_set = $event_easter_sunday->as_list(from => $easter_1917, to => $easter_1932, inclusive=>1);
+my $non_inclusive_set = $event_easter_sunday->as_set(from => $easter_1901, to => $easter_1917);
+my $inclusive_set = $event_easter_sunday->as_set(from => $easter_1917, to => $easter_1932, inclusive=>1);
 
-is ($#non_inclusive_set, $#non_inclusive_expect, "Non-inclusive: Correct number of results");
-for my $i (0 .. $#non_inclusive_set) {
-	is( $non_inclusive_set[$i]->ymd, 
+my @ni_set = $non_inclusive_set->as_list();
+is ($#ni_set, $#non_inclusive_expect, "Non-inclusive: Correct number of results");
+
+my $i = 0;
+my $non_inclusive_interator = $non_inclusive_set->iterator;
+while ( my $dt = $non_inclusive_interator->next ) {
+	is( $dt->ymd, 
 		$non_inclusive_expect[$i], 
 		"Correct date: $non_inclusive_expect[$i]"
 	);
-}
+	$i++;
+};
 
-is ($#inclusive_set, $#inclusive_expect, "Inclusive: Correct number of results");
-for my $i (0 .. $#inclusive_set) {
-	is( $inclusive_set[$i]->ymd, 
+
+my @i_set = $inclusive_set->as_list();
+is ($#i_set, $#inclusive_expect, "Inclusive: Correct number of results");
+$i = 0;
+my $inclusive_interator = $inclusive_set->iterator;
+while ( my $dt = $inclusive_interator->next ) {
+	is( $dt->ymd, 
 		$inclusive_expect[$i], 
 		"Correct date: $inclusive_expect[$i]"
 	);
-}
+	$i++;
+};
 
 
 

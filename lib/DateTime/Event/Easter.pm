@@ -1,5 +1,6 @@
 package DateTime::Event::Easter;
 use DateTime;
+use DateTime::Set;
 use Carp;
 use Params::Validate qw( validate SCALAR BOOLEAN OBJECT );
 
@@ -13,7 +14,7 @@ require Exporter;
 @ISA = qw(Exporter);
 
 @EXPORT_OK = qw(easter);
-$VERSION = '1.00.02';
+$VERSION = '1.02';
 
 sub new {
     my $class = shift;
@@ -181,7 +182,7 @@ sub as_list {
 
 sub as_set {
     my $self = shift;
-    return DateTime::Set->new( dates => [ $self->as_list(@_) ] );
+    return DateTime::Set->from_datetimes( dates => [ $self->as_list(@_) ] );
 }
 
 sub as_span {

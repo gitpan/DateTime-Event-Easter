@@ -86,3 +86,10 @@ Note on version conventions:
 	* This release fixes a bug and should be installed for correct 
 	  handling of closest().
 
+1.02 Sun Aug 17, 2003 +1000
+	- as_set() now works. Previously it called a non-existant method in 
+	  DateTime::Set (new()) where it should have called ->from_datetimes().
+	  This wasn't previously picked up by the tests because the t/05sets
+	  test was actually an exact duplicate of 04lists.t! This issue was
+	  discovered by Ron Hill.
+	  
