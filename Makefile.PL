@@ -10,5 +10,6 @@ WriteMakefile(
                     'DateTime'         => 0.06,
                     'Carp'             => 0,
                     'Params::Validate' => 0,
-    }
+                    'DateTime::Calendar::Julian' => 0,
+   }
 );

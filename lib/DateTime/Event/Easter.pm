@@ -13,7 +13,7 @@ require Exporter;
 @ISA = qw(Exporter);
 
 @EXPORT_OK = qw(easter);
-$VERSION = '1.00.1';
+$VERSION = '1.00.02';
 
 sub new {
     my $class = shift;

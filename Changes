@@ -71,3 +71,11 @@ Note on version conventions:
         - Hadn't updated the documentation for the release version. Done now.
         - Hadn't updated $VERSION to match the version number on the release
         * No functionality changed. See note 'Minor decimal number releases'
+
+1.00.02 Wed Apr  2 2003
+        - Installation now includes pre-req for DateTime::Calendar::Julian
+          which is only used if you're calculating Orthodox Easter.
+        * No functionality changed. See note 'Minor decimal number releases'
+
+
+
