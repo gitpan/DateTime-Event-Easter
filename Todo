@@ -1,0 +1,7 @@
+TODO list for Perl module DateTime::Event::Easter
+
+- DateTime::Span implementation
+
+- Code optimization - make it go faster!
+
+

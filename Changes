@@ -1,0 +1,69 @@
+Revision history for Perl module DateTime::Event::Easter
+
+Note on version conventions:
+0.00.00
+|  |  |
+|  |  +- Minor Decimal
+|  +---- Major Decimal
++------- Whole Number
+
+* Whole numbers are rewrite releases. They contain major rewrites
+  or alterations to the API. Read the docs before using them.
+* Major decimal number is patch release. Some coding has changed
+  but the API remains the same (or is extended). Upgrading to 
+  these should not change any expected behaviour, however it
+  will alter buggy behaviour. Read the docs and check if you've
+  been using work-arounds before using them.
+* Minor decimal number is a doc or installer patch only. If you have
+  the module installed and understand how it works, you don't need
+  this release.
+
+0.01 Mon Mar 24 2003
+	- original version - posted to DateTime mailing list
+
+0.02 Wed Mar 26 2003
+        - posted to DateTime mailing list with this message
+
+        Beta 2 includes support for Orthodox Easter, however I doubt
+        it handles it the best way possible. Please take a look and
+        offer suggestions (its the last sub before the POD). It
+        should also be noted that both Easters should return
+        Gregorian Dates as they do now.
+
+        I've renamed the two Easters as 'western' and 'eastern'.
+        This is still probably not the best names but its better
+        than my mistake concerning Orthodox easter in the previous
+        release :). If anyone can help with names that relate I'd
+        love it. I considered 'western' and 'orthodox', but I'd
+        prefer names that are related.
+
+        The ->set method is now ->as_list and I've added ->as_set
+        which returns a DateTime::Set object (although this isn't
+        tested at ALL! CPAN wouldn't give me DateTime::Set :))
+
+        The cache has been removed. This means years are sometimes
+        recalculated a second later, but the memory blow-out factor
+        isn't there.
+
+0.03 Sun Mar 30 2003
+	- posted to DateTime mailing list with this message:
+
+        I've poked it with sticks like years with no Orthodox Easter
+        (35000).
+
+        I'd like to make it run faster some time, so if anyone can
+        think of better ways to do things without the Caching
+        problem, let me know.
+
+1.00 Sun Mar 30 2003
+	- first release version
+        - first CPAN release
+
+        - Added support for any DateTime::Calendar module that subscibes
+          to the API (ie, has from_object and utc_rd_values)
+          - Thanks Eugene van der Pijll
+
+        - Added placeholder methods as_span and _tospan. Currently these
+          do nothing. Once DateTime::Span exists, we'll get them going.
+
+
