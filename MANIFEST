@@ -5,7 +5,7 @@ Changes
 MANIFEST
 Makefile.PL
 lib/DateTime/Event/Easter.pm
-t/00load.t
+t/00load_pod.t
 t/01basic.t
 t/02match.t
 t/03preset.t

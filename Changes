@@ -108,4 +108,10 @@ Note on version conventions:
 	 	 Return NextEaster if PreviousEaster+Duration < Now
 	 	 otherwise Return PreviousEaster
 	  Error first noticed by automated CPAN tester.
+
+1.04 Sun Apr 04, 2004 +1000
+	- fixed incompatibility with newest versions of DateTime::Set (which
+	  changed the way DateTime::Set->from_recurrence worked with infinite
+	  values)
+	  Patch provided by Ronald Hill.
 		 

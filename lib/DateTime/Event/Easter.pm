@@ -14,7 +14,7 @@ require Exporter;
 @ISA = qw(Exporter);
 
 @EXPORT_OK = qw(easter);
-$VERSION = '1.03';
+$VERSION = '1.04';
 
 sub new {
     my $class = shift;
@@ -216,8 +216,8 @@ sub as_set {
 			$args{before} = delete $args{to};
 	}
 	return DateTime::Set->from_recurrence( 
-		next		=> sub { $self->following( $_[0] ) },
-		previous	=> sub { $self->previous(  $_[0] ) },
+		next		=> sub { return $_[0] if $_[0]->is_infinite; $self->following( $_[0] ) },
+		previous	=> sub { return $_[0] if $_[0]->is_infinite; $self->previous(  $_[0] ) },
 		%args
 	);
 }
