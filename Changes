@@ -1,9 +1,9 @@
 Revision history for Perl module DateTime::Event::Easter
 
 Note on version conventions:
-0.00.00
-|  |  |
-|  |  +- Minor Decimal
+0.0000
+|  | |
+|  | +-- Minor Decimal
 |  +---- Major Decimal
 +------- Whole Number
 
@@ -77,5 +77,12 @@ Note on version conventions:
           which is only used if you're calculating Orthodox Easter.
         * No functionality changed. See note 'Minor decimal number releases'
 
-
+1.0100 Sat Jun 28, 2003 +1000
+	- Changed versioning to only use one decimal point. Stops poor CPAN
+	  from getting confused!
+	- Altered closest() to compare delta_days rather than just the two
+	  DateTime::Duration objects. Not sure why I had to do this but it
+	  fixed the problem!
+	* This release fixes a bug and should be installed for correct 
+	  handling of closest().
 

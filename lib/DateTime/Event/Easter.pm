@@ -118,7 +118,9 @@ sub closest {
     my $previous_easter  = $self->previous($dt);
     my $previous_delta   = $dt - $previous_easter;
         
-    my $easter = ($following_delta < $previous_delta) ? $following_easter : $previous_easter;
+    my $easter = ($following_delta->delta_days < $previous_delta->delta_days) 
+        ? $following_easter 
+        : $previous_easter;
     $easter = $class->from_object(object=>$easter) if (ref($easter) ne $class);
     return ($self->{as} eq 'span') 
         ? _tospan($easter)
